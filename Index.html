@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Business Receptionist V1</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f4f6f9;
+    color:#172033;
+}
+
+header{
+    background:#111827;
+    color:white;
+    padding:16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    position:sticky;
+    top:0;
+    z-index:10;
+}
+
+.logo{
+    font-size:20px;
+    font-weight:bold;
+}
+
+.logo span{
+    color:#60a5fa;
+}
+
+.menu-btn{
+    background:#2563eb;
+    border:0;
+    color:white;
+    padding:9px 13px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+    padding:20px;
+}
+
+.hero{
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+    color:white;
+    padding:35px 25px;
+    border-radius:18px;
+    margin-bottom:20px;
+}
+
+.hero h1{
+    font-size:30px;
+    margin-bottom:10px;
+}
+
+.hero p{
+    opacity:.9;
+    line-height:1.6;
+}
+
+.tabs{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    margin-bottom:20px;
+}
+
+.tab{
+    border:0;
+    padding:11px 15px;
+    border-radius:10px;
+    background:white;
+    cursor:pointer;
+    white-space:nowrap;
+}
+
+.tab.active{
+    background:#2563eb;
+    color:white;
+}
+
+.section{
+    display:none;
+}
+
+.section.active{
+    display:block;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+}
+
+.card{
+    background:white;
+    border-radius:15px;
+    padding:20px;
+    box-shadow:0 4px 15px rgba(0,0,0,.06);
+    margin-bottom:18px;
+}
+
+.stat{
+    font-size:28px;
+    font-weight:bold;
+    margin-top:8px;
+}
+
+label{
+    display:block;
+    margin:12px 0 6px;
+    font-weight:bold;
+}
+
+input,textarea,select{
+    width:100%;
+    padding:12px;
+    border:1px solid #d1d5db;
+    border-radius:9px;
+    font-size:15px;
+}
+
+textarea{
+    min-height:100px;
+    resize:vertical;
+}
+
+.btn{
+    margin-top:15px;
+    padding:12px 18px;
+    border:0;
+    border-radius:9px;
+    background:#2563eb;
+    color:white;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.btn.secondary{
+    background:#111827;
+}
+
+.chat-box{
+    height:400px;
+    overflow-y:auto;
+    background:#eef2ff;
+    padding:15px;
+    border-radius:12px;
+}
+
+.msg{
+    max-width:80%;
+    padding:11px 14px;
+    margin-bottom:10px;
+    border-radius:12px;
+    line-height:1.5;
+}
+
+.bot{
+    background:white;
+}
+
+.user{
+    background:#2563eb;
+    color:white;
+    margin-left:auto;
+}
+
+.chat-input{
+    display:flex;
+    gap:8px;
+    margin-top:10px;
+}
+
+.chat-input input{
+    flex:1;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    padding:12px;
+    border-bottom:1px solid #e5e7eb;
+    text-align:left;
+}
+
+.badge{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:20px;
+    background:#dcfce7;
+    color:#166534;
+    font-size:12px;
+}
+
+.empty{
+    text-align:center;
+    padding:30px;
+    color:#6b7280;
+}
+
+@media(max-width:750px){
+    .grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .hero h1{
+        font-size:24px;
+    }
+
+    table{
+        font-size:13px;
+    }
+
+    th,td{
+        padding:8px;
+    }
+}
+
+@media(max-width:480px){
+    .container{
+        padding:12px;
+    }
+
+    .grid{
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+    }
+
+    .card{
+        padding:15px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">AI <span>Receptionist</span></div>
+    <button class="menu-btn" onclick="showSection('dashboard')">
+        Dashboard
+    </button>
+</header>
+
+<div class="container">
+
+    <div class="hero">
+        <h1>आपका Smart AI Receptionist 🤖</h1>
+        <p>
+            ग्राहक के सवालों का जवाब दें, appointments संभालें
+            और अपने business को एक जगह से manage करें।
+        </p>
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" onclick="showSection('dashboard',this)">Dashboard</button>
+        <button class="tab" onclick="showSection('setup',this)">Business Setup</button>
+        <button class="tab" onclick="showSection('chat',this)">AI Chat</button>
+        <button class="tab" onclick="showSection('appointments',this)">Appointments</button>
+        <button class="tab" onclick="showSection('customers',this)">Customers</button>
+    </div>
+
+
+    <!-- DASHBOARD -->
+
+    <section id="dashboard" class="section active">
+
+        <div class="grid">
+
+            <div class="card">
+                <div>आज की Appointments</div>
+                <div class="stat" id="statAppointments">0</div>
+            </div>
+
+            <div class="card">
+                <div>कुल Customers</div>
+                <div class="stat" id="statCustomers">0</div>
+            </div>
+
+            <div class="card">
+                <div>AI Chats</div>
+                <div class="stat" id="statChats">0</div>
+            </div>
+
+            <div class="card">
+                <div>Status</div>
+                <div class="stat" style="font-size:18px">
+                    <span class="badge">Active</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card">
+            <h2>Business Overview</h2>
+            <br>
+            <p><b>Business:</b> <span id="dashBusiness">Demo Business</span></p>
+            <p><b>Category:</b> <span id="dashCategory">Service</span></p>
+            <p><b>Phone:</b> <span id="dashPhone">Not Added</span></p>
+        </div>
+
+    </section>
+
+
+    <!-- BUSINESS SETUP -->
+
+    <section id="setup" class="section">
+
+        <div class="card">
+
+            <h2>Business Setup 🏢</h2>
+
+            <label>Business Name</label>
+            <input id="businessName" placeholder="जैसे Sharma Salon">
+
+            <label>Business Category</label>
+            <select id="businessCategory">
+                <option>Salon</option>
+                <option>Doctor / Clinic</option>
+                <option>Restaurant</option>
+                <option>Real Estate</option>
+                <option>Coaching</option>
+                <option>Shop</option>
+                <option>Other</option>
+            </select>
+
+            <label>Business Phone</label>
+            <input id="businessPhone" placeholder="मोबाइल नंबर">
+
+            <label>Business Address</label>
+            <textarea id="businessAddress"
+                placeholder="Business का पता"></textarea>
+
+            <label>Opening Time</label>
+            <input type="time" id="openingTime">
+
+            <label>Closing Time</label>
+            <input type="time" id="closingTime">
+
+            <label>Services & Prices</label>
+            <textarea id="services"
+                placeholder="Haircut - ₹200
+Hair Spa - ₹500
+Facial - ₹700"></textarea>
+
+            <button class="btn" onclick="saveBusiness()">
+                Save Business
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- AI CHAT -->
+
+    <section id="chat" class="section">
+
+        <div class="card">
+
+            <h2>AI Receptionist 🤖</h2>
+            <br>
+
+            <div class="chat-box" id="chatBox">
+
+                <div class="msg bot">
+                    नमस्ते! 👋 मैं आपका AI Receptionist हूँ।
+                    आप क्या जानना चाहते हैं?
+                </div>
+
+            </div>
+
+            <div class="chat-input">
+
+                <input
+                    id="chatInput"
+                    placeholder="ग्राहक का सवाल लिखें..."
+                    onkeydown="if(event.key==='Enter') sendMessage()">
+
+                <button class="btn" onclick="sendMessage()">
+                    Send
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- APPOINTMENTS -->
+
+    <section id="appointments" class="section">
+
+        <div class="card">
+
+            <h2>नई Appointment 📅</h2>
+
+            <label>Customer Name</label>
+            <input id="customerName" placeholder="ग्राहक का नाम">
+
+            <label>Mobile Number</label>
+            <input id="customerPhone" placeholder="मोबाइल नंबर">
+
+            <label>Date</label>
+            <input type="date" id="appointmentDate">
+
+            <label>Time</label>
+            <input type="time" id="appointmentTime">
+
+            <label>Service</label>
+            <input id="appointmentService"
+                placeholder="जैसे Haircut">
+
+            <button class="btn" onclick="addAppointment()">
+                Confirm Appointment
+            </button>
+
+        </div>
+
+        <div class="card">
+
+            <h2>Appointments</h2>
+            <br>
+
+            <div id="appointmentList">
+                <div class="empty">
+                    अभी कोई appointment नहीं है।
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- CUSTOMERS -->
+
+    <section id="customers" class="section">
+
+        <div class="card">
+
+            <h2>Customers 👥</h2>
+            <br>
+
+            <div id="customerList">
+                <div class="empty">
+                    अभी कोई customer नहीं है।
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script>
+
+let data = JSON.parse(
+    localStorage.getItem("aiReceptionistData")
+) || {
+    business:{},
+    appointments:[],
+    customers:[],
+    chats:0
+};
+
+
+function saveData(){
+    localStorage.setItem(
+        "aiReceptionistData",
+        JSON.stringify(data)
+    );
+}
+
+
+function showSection(id,button){
+
+    document.querySelectorAll(".section")
+        .forEach(s=>s.classList.remove("active"));
+
+    document.getElementById(id)
+        .classList.add("active");
+
+    document.querySelectorAll(".tab")
+        .forEach(t=>t.classList.remove("active"));
+
+    if(button){
+        button.classList.add("active");
+    }
+
+    updateDashboard();
+}
+
+
+function saveBusiness(){
+
+    data.business={
+        name:document.getElementById("businessName").value,
+        category:document.getElementById("businessCategory").value,
+        phone:document.getElementById("businessPhone").value,
+        address:document.getElementById("businessAddress").value,
+        opening:document.getElementById("openingTime").value,
+        closing:document.getElementById("closingTime").value,
+        services:document.getElementById("services").value
+    };
+
+    saveData();
+
+    updateDashboard();
+
+    alert("Business information save हो गई ✅");
+}
+
+
+function updateDashboard(){
+
+    document.getElementById("statAppointments")
+        .innerText=data.appointments.length;
+
+    document.getElementById("statCustomers")
+        .innerText=data.customers.length;
+
+    document.getElementById("statChats")
+        .innerText=data.chats;
+
+    document.getElementById("dashBusiness")
+        .innerText=data.business.name || "Demo Business";
+
+    document.getElementById("dashCategory")
+        .innerText=data.business.category || "Service";
+
+    document.getElementById("dashPhone")
+        .innerText=data.business.phone || "Not Added";
+
+    renderAppointments();
+    renderCustomers();
+}
+
+
+function sendMessage(){
+
+    const input=document.getElementById("chatInput");
+    const message=input.value.trim();
+
+    if(!message) return;
+
+    addChatMessage(message,"user");
+
+    data.chats++;
+
+    let reply=getAIReply(message);
+
+    setTimeout(()=>{
+        addChatMessage(reply,"bot");
+    },400);
+
+    input.value="";
+
+    saveData();
+    updateDashboard();
+}
+
+
+function addChatMessage(text,type){
+
+    const box=document.getElementById("chatBox");
+
+    const div=document.createElement("div");
+
+    div.className="msg "+type;
+
+    div.innerText=text;
+
+    box.appendChild(div);
+
+    box.scrollTop=box.scrollHeight;
+}
+
+
+function getAIReply(message){
+
+    const m=message.toLowerCase();
+
+    const business=data.business;
+
+    if(
+        m.includes("price") ||
+        m.includes("कीमत") ||
+        m.includes("रेट") ||
+        m.includes("दाम")
+    ){
+
+        return business.services
+            ? "हमारी services और prices:\n\n"+
+              business.services
+            : "कृपया Business Setup में अपनी services और prices add करें।";
+    }
+
+
+    if(
+        m.includes("time") ||
+        m.includes("समय") ||
+        m.includes("कब") ||
+        m.includes("खुले")
+    ){
+
+        if(business.opening && business.closing){
+
+            return "हमारा business "+
+                business.opening+
+                " से "+
+                business.closing+
+                " तक खुला रहता है।";
+        }
+
+        return "कृपया Business Setup में opening और closing time add करें।";
+    }
+
+
+    if(
+        m.includes("appointment") ||
+        m.includes("booking") ||
+        m.includes("बुक") ||
+        m.includes("अपॉइंटमेंट")
+    ){
+
+        return "ज़रूर! आप Appointments सेक्शन में जाकर तारीख और समय चुनकर booking कर सकते हैं।";
+    }
+
+
+    if(
+        m.includes("address") ||
+        m.includes("पता") ||
+        m.includes("location") ||
+        m.includes("कहाँ")
+    ){
+
+        return business.address
+            ? "हमारा पता है: "+business.address
+            : "कृपया Business Setup में अपना address add करें।";
+    }
+
+
+    if(
+        m.includes("hello") ||
+        m.includes("hi") ||
+        m.includes("नमस्ते")
+    ){
+
+        return "नमस्ते! 👋 मैं आपकी मदद के लिए यहाँ हूँ। आप services, price, timing या appointment के बारे में पूछ सकते हैं।";
+    }
+
+
+    return "धन्यवाद! 😊 आपकी जानकारी प्राप्त हुई। हमारा staff जल्द आपकी मदद करेगा।";
+}
+
+
+function addAppointment(){
+
+    const name=document.getElementById("customerName").value.trim();
+    const phone=document.getElementById("customerPhone").value.trim();
+    const date=document.getElementById("appointmentDate").value;
+    const time=document.getElementById("appointmentTime").value;
+    const service=document.getElementById("appointmentService").value.trim();
+
+    if(!name || !phone || !date || !time){
+
+        alert("कृपया Name, Mobile, Date और Time भरें।");
+        return;
+    }
+
+
+    data.appointments.push({
+        name,
+        phone,
+        date,
+        time,
+        service
+    });
+
+
+    const existing=data.customers.find(
+        c=>c.phone===phone
+    );
+
+
+    if(!existing){
+
+        data.customers.push({
+            name,
+            phone,
+            service
+        });
+
+    }
+
+
+    saveData();
+
+    updateDashboard();
+
+    document.getElementById("customerName").value="";
+    document.getElementById("customerPhone").value="";
+    document.getElementById("appointmentDate").value="";
+    document.getElementById("appointmentTime").value="";
+    document.getElementById("appointmentService").value="";
+
+    alert("Appointment Confirm हो गई ✅");
+}
+
+
+function renderAppointments(){
+
+    const box=document.getElementById("appointmentList");
+
+    if(data.appointments.length===0){
+
+        box.innerHTML=
+        '<div class="empty">अभी कोई appointment नहीं है।</div>';
+
+        return;
+    }
+
+
+    let html="<table>";
+
+    html+=`
+    <tr>
+        <th>नाम</th>
+        <th>मोबाइल</th>
+        <th>तारीख</th>
+        <th>समय</th>
+        <th>Service</th>
+    </tr>`;
+
+
+    data.appointments.forEach(a=>{
+
+        html+=`
+        <tr>
+            <td>${escapeHTML(a.name)}</td>
+            <td>${escapeHTML(a.phone)}</td>
+            <td>${escapeHTML(a.date)}</td>
+            <td>${escapeHTML(a.time)}</td>
+            <td>${escapeHTML(a.service || "-")}</td>
+        </tr>`;
+
+    });
+
+
+    html+="</table>";
+
+    box.innerHTML=html;
+}
+
+
+function renderCustomers(){
+
+    const box=document.getElementById("customerList");
+
+    if(data.customers.length===0){
+
+        box.innerHTML=
+        '<div class="empty">अभी कोई customer नहीं है।</div>';
+
+        return;
+    }
+
+
+    let html="<table>";
+
+    html+=`
+    <tr>
+        <th>नाम</th>
+        <th>मोबाइल</th>
+        <th>Service</th>
+    </tr>`;
+
+
+    data.customers.forEach(c=>{
+
+        html+=`
+        <tr>
+            <td>${escapeHTML(c.name)}</td>
+            <td>${escapeHTML(c.phone)}</td>
+            <td>${escapeHTML(c.service || "-")}</td>
+        </tr>`;
+
+    });
+
+
+    html+="</table>";
+
+    box.innerHTML=html;
+}
+
+
+function escapeHTML(value){
+
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+}
+
+
+function loadBusiness(){
+
+    if(!data.business) return;
+
+    document.getElementById("businessName").value=
+        data.business.name || "";
+
+    document.getElementById("businessCategory").value=
+        data.business.category || "Salon";
+
+    document.getElementById("businessPhone").value=
+        data.business.phone || "";
+
+    document.getElementById("businessAddress").value=
+        data.business.address || "";
+
+    document.getElementById("openingTime").value=
+        data.business.opening || "";
+
+    document.getElementById("closingTime").value=
+        data.business.closing || "";
+
+    document.getElementById("services").value=
+        data.business.services || "";
+}
+
+
+loadBusiness();
+updateDashboard();
+
+</script>
+
+</body>
+          </html>
